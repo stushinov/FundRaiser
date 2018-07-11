@@ -10,4 +10,10 @@ contract Fund {
     constructor() public {
         owner = msg.sender;
     }
+
+    function getBalance() constant public returns (uint256){
+        return address(this).balance;
+    }
+
+    function() public payable {}
 }
