@@ -32,4 +32,12 @@ contract("Funding", accounts => {
 
         assert.equal(balanceOfFund, allEthDonations, "Donated funds mismatch!");
     });
+
+    it('Function "getAddress()" should return correct address.', async () => {
+        const fund = await FUND.new({from: secondAccount});
+
+        let addressFound = await fund.getAddress();
+
+        assert.equal(fund.address, addressFound, 'Address mismatch!');
+    });
 });

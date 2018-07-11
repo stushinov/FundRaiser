@@ -15,5 +15,9 @@ contract Fund {
         return address(this).balance;
     }
 
+    function getAddress() constant public returns (address) {
+        return address(this);
+    }
+
     function() public payable {}
 }
