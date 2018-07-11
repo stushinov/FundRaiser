@@ -1,5 +1,4 @@
-const Funding = artifacts.require("Funding.sol");
-
+const FUNDING_FACTORY = artifacts.require("FundingFactory");
 module.exports = function(deployer){
-    deployer.deploy(Funding);
+    deployer.deploy(FUNDING_FACTORY);
 };
