@@ -4,6 +4,10 @@ contract FundingFactory {
 
 }
 
+interface Identifiable {
+    function getType() public view returns (string);
+}
+
 contract Fund {
 
     address public owner;
