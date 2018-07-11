@@ -40,4 +40,16 @@ contract("Funding", accounts => {
 
         assert.equal(fund.address, addressFound, 'Address mismatch!');
     });
+
+    it('A donation to a Fund should emit an event.', async () => {
+        const fund = await FUND.new();
+        let donation = await fund.send(1000, {from: firstAccount});
+
+        let eventName = donation.logs[0].event;
+
+
+        assert.equal(eventName, 'Donation', 'Event name mismatch');
+        assert.equal(firstAccount, donation.logs[0].args.sender, 'Event name mismatch');
+        assert.equal(1000, donation.logs[0].args.amount, 'Event name mismatch');
+    });
 });
