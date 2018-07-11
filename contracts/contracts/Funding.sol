@@ -30,3 +30,9 @@ contract Fund {
         emit Donation(msg.sender, msg.value);
     }
 }
+
+contract DonationsFund is Fund, Identifiable {
+    function getType() public view returns (string){
+        return "DonationsFund";
+    }
+}
