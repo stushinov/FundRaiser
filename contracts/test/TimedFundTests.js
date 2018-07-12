@@ -8,7 +8,6 @@ contract("TimedFund", accounts => {
 
     const [firstAccount, secondAccount, thirdAccount] = accounts;
 
-
     const increaseTime = async function (seconds) {
         await web3.currentProvider.send({
             jsonrpc: "2.0",
@@ -17,7 +16,6 @@ contract("TimedFund", accounts => {
             id: 1111
         });
     };
-
 
     it('Creating a donations fund should set correct time', async () => {
         let currentBlockTime = await web3.eth.getBlock('latest').timestamp;
@@ -57,7 +55,7 @@ contract("TimedFund", accounts => {
         let error;
 
         try {
-           await fund.send(100, {from: firstAccount});
+            await fund.send(100, {from: firstAccount});
         }
         catch (err) {
             error = err;
@@ -77,5 +75,39 @@ contract("TimedFund", accounts => {
         const TARGET_FOUND = await fund.target();
 
         assert.equal(TARGET_FOUND, EXPECTED_TARGET, "Target mismatch!");
+    });
+
+    it('Donations made to the "TimedFund" are recorded and have the correct amounts.', async () => {
+        const fund = await TIMED_FUND.new(300, ONE_ETHER, {from: secondAccount});
+
+        const TEN_THOUSAND_WEI = 10000;
+        const TEN_WEI = 10;
+        const ONE_MILLION_WEI = 1000000;
+
+        await web3.eth.sendTransaction({
+            from: secondAccount,
+            to: fund.address,
+            value: TEN_THOUSAND_WEI
+        });
+
+        await web3.eth.sendTransaction({
+            from: firstAccount,
+            to: fund.address,
+            value: TEN_WEI
+        });
+
+        await web3.eth.sendTransaction({
+            from: thirdAccount,
+            to: fund.address,
+            value: ONE_MILLION_WEI
+        });
+
+        let secondAccountDonation = await fund.getDonations(secondAccount);
+        let firstAccountDonation = await fund.getDonations(firstAccount);
+        let thirdAccountDonation = await fund.getDonations(thirdAccount);
+
+        assert.equal(secondAccountDonation, TEN_THOUSAND_WEI, "Donation mismatch!");
+        assert.equal(firstAccountDonation, TEN_WEI, "Donation mismatch!");
+        assert.equal(thirdAccountDonation, ONE_MILLION_WEI, "Donation mismatch!");
     });
 });

@@ -42,6 +42,7 @@ contract TimedFund is Fund, Identifiable {
 
     uint256 public expires;
     uint256 public target;
+    mapping(address => uint256) private donations;
 
     constructor(uint256 _expires, uint256 _target) public {
         expires = now.add(_expires);
@@ -52,7 +53,12 @@ contract TimedFund is Fund, Identifiable {
         return "TimedFund";
     }
 
+    function getDonations(address _ofAddress) public view returns (uint256) {
+        return donations[_ofAddress];
+    }
+
     function() public payable nonExpired {
+        donations[msg.sender] = donations[msg.sender].add(msg.value);
         emit Donation(msg.sender, msg.value);
     }
 }
