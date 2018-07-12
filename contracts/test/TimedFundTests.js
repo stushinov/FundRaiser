@@ -110,4 +110,25 @@ contract("TimedFund", accounts => {
         assert.equal(firstAccountDonation, TEN_WEI, "Donation mismatch!");
         assert.equal(thirdAccountDonation, ONE_MILLION_WEI, "Donation mismatch!");
     });
+
+    it('Withdrawal function should send money to the owner', async () => {
+        const fund = await TIMED_FUND.new(300, ONE_ETHER, {from: secondAccount});
+
+        const TEN_ETHERS = 10 * ETH_MULTIPLIER;
+        const FIVE_ETHERS = 5 *ETH_MULTIPLIER;
+
+        await web3.eth.sendTransaction({
+            from: secondAccount,
+            to: fund.address,
+            value: TEN_ETHERS
+        });
+
+        assert.equal(await fund.getBalance(), TEN_ETHERS, "Balance mismatch!");
+
+        const EXPECTED_BALANCE = FIVE_ETHERS;
+
+        await fund.withdrawal(FIVE_ETHERS, {from: secondAccount});
+
+        assert.equal(await fund.getBalance(), FIVE_ETHERS, "Balance mismatch!");
+    });
 });

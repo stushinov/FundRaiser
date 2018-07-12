@@ -49,6 +49,11 @@ contract TimedFund is Fund, Identifiable {
         target = _target;
     }
 
+    function withdrawal(uint256 _amount) public payable {
+        owner.transfer(_amount);
+        emit Donation(msg.sender, _amount);
+    }
+
     function getType() public view returns (string) {
         return "TimedFund";
     }
