@@ -16,4 +16,10 @@ contract FundingFactoryTests {
         Assert.equal(tf.getType(), expected, "Type mismatch!");
         Assert.equal(tf.target(), 10**18, "Target mismatch!");
     }
+
+    function testCreationOfTimedFundShouldAssingCorrectOwner(){
+        address fundAddr = ff.createTimedFund(300, 10**18);
+        TimedFund tf = TimedFund(fundAddr);
+        Assert.equal(this, tf.owner(), "Owner mismatch!");
+    }
 }

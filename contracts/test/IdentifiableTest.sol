@@ -6,7 +6,7 @@ contract IdentifiableTest {
     uint256 constant ETH_MULTIPLIER = 10**18;
 
     function testCreatingADonationsFundShouldReturnCorrectType() public {
-        Identifiable i = new TimedFund(300, 1 * ETH_MULTIPLIER);
+        Identifiable i = new TimedFund(msg.sender, 300, 1 * ETH_MULTIPLIER);
         string memory expected =  "TimedFund";
         Assert.equal(i.getType(), expected, "Type mismatch!");
     }

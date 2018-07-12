@@ -6,17 +6,17 @@ contract("Funding", accounts => {
     const ETH_MULTIPLIER = 10**18;
 
     it('Creates a new "Fund" contract with no errors', async() => {
-        const fund = await FUND.new();
+        const fund = await FUND.new(thirdAccount);
     });
 
     it('Creates a new Fund with an owner = msg.sender', async () => {
-        const fund = await FUND.new({from: secondAccount});
+        const fund = await FUND.new(secondAccount, {from: secondAccount});
         let OWNER_FOUND = await fund.owner({from: firstAccount});
         assert.equal(OWNER_FOUND, secondAccount, 'Owner mismatch!');
     });
 
     it('Fund is able to receive funds.', async () => {
-        const fund = await FUND.new({from: secondAccount});
+        const fund = await FUND.new(secondAccount, {from: secondAccount});
 
         let firstEthDonation = 0.001 * ETH_MULTIPLIER;
         let secondEthDonation = 0.002 * ETH_MULTIPLIER;
@@ -32,7 +32,7 @@ contract("Funding", accounts => {
     });
 
     it('Function "getAddress()" should return correct address.', async () => {
-        const fund = await FUND.new({from: secondAccount});
+        const fund = await FUND.new(secondAccount, {from: secondAccount});
 
         let addressFound = await fund.getAddress();
 
@@ -40,7 +40,8 @@ contract("Funding", accounts => {
     });
 
     it('A donation to a Fund should emit an event.', async () => {
-        const fund = await FUND.new();
+        const fund = await FUND.new(firstAccount);
+
         let donation = await fund.send(1000, {from: firstAccount});
 
         let eventName = donation.logs[0].event;

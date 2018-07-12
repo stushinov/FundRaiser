@@ -4,7 +4,7 @@ contract FundingFactory {
     event ContractCreated(address contractAddress, address _by);
 
     function createTimedFund(uint256 expirationTime, uint256 goal) public returns(address){
-        Identifiable i = new TimedFund(expirationTime, goal);
+        Identifiable i = new TimedFund(msg.sender, expirationTime, goal);
         emit ContractCreated(i, msg.sender);
         return i;
     }
@@ -22,8 +22,8 @@ contract Fund {
 
     event Donation(address sender, uint256 amount);
 
-    constructor() public {
-        owner = msg.sender;
+    constructor(address _owner) public {
+        owner = _owner;
     }
 
     function getBalance() constant public returns (uint256){
@@ -67,7 +67,7 @@ contract TimedFund is Fund, Identifiable {
 
     mapping(address => uint256) private donations;
 
-    constructor(uint256 _expires, uint256 _target) public {
+    constructor(address _owner, uint256 _expires, uint256 _target) Fund(_owner) public {
         expires = now.add(_expires);
         target = _target;
         raised = 0;
