@@ -158,4 +158,30 @@ contract("TimedFund", accounts => {
 
         assert.equal(await fund.getBalance(), FIVE_ETHERS, "Balance mismatch!")
     });
+
+    it('The "raised" variable should keep the total amount that was donated, no matter if the owner withdrawals funds', async () => {
+        const fund = await TIMED_FUND.new(300, ONE_ETHER, {from: secondAccount});
+
+        const TEN_ETHERS = 10 * ONE_ETHER;
+        const FIVE_ETHERS = 5 * ONE_ETHER;
+
+        await web3.eth.sendTransaction({
+            from: thirdAccount,
+            to: fund.address,
+            value: TEN_ETHERS
+        });
+
+        await web3.eth.sendTransaction({
+            from: firstAccount,
+            to: fund.address,
+            value: ONE_ETHER
+        });
+
+        await fund.withdrawal(FIVE_ETHERS, {from: secondAccount});
+
+        const EXPECTED_RAISED_WEI = TEN_ETHERS + ONE_ETHER;
+        const RAISED_WEI_FOUND = await fund.raised();
+
+        assert.equal(EXPECTED_RAISED_WEI, RAISED_WEI_FOUND, "Raised amount mismatch!");
+    });
 });
