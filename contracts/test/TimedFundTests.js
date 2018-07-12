@@ -75,7 +75,7 @@ contract("TimedFund", accounts => {
 
         const EXPECTED_TARGET = 1.25 * ETH_MULTIPLIER; //1.25 ethers
         const TARGET_FOUND = await fund.target();
-        
+
         assert.equal(TARGET_FOUND, EXPECTED_TARGET, "Target mismatch!");
     });
 });
