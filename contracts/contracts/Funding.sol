@@ -10,6 +10,8 @@ interface Identifiable {
 
 contract Fund {
 
+    using SafeMath for uint256;
+
     address public owner;
 
     event Donation(address sender, uint256 amount);
@@ -42,7 +44,7 @@ contract TimedFund is Fund, Identifiable {
     uint256 public target;
 
     constructor(uint256 _expires, uint256 _target) public {
-        expires = now + _expires;
+        expires = now.add(_expires);
         target = _target;
     }
 
