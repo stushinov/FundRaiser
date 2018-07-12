@@ -31,7 +31,7 @@ contract Fund {
     }
 }
 
-contract DonationsFund is Fund, Identifiable {
+contract TimedFund is Fund, Identifiable {
 
     modifier nonExpired {
         require(now <= expires);
@@ -45,7 +45,7 @@ contract DonationsFund is Fund, Identifiable {
     }
 
     function getType() public view returns (string) {
-        return "DonationsFund";
+        return "TimedFund";
     }
 
     function() public payable nonExpired {

@@ -4,8 +4,8 @@ import "../contracts/Funding.sol";
 contract IdentifiableTest {
 
     function testCreatingADonationsFundShouldReturnCorrectType() public {
-        Identifiable i = new DonationsFund(300);
-        string memory expected =  "DonationsFund";
+        Identifiable i = new TimedFund(300);
+        string memory expected =  "TimedFund";
         Assert.equal(i.getType(), expected, "Type mismatch!");
     }
 }

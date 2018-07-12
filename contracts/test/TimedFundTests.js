@@ -1,6 +1,6 @@
-const DONATIONS_FUND = artifacts.require("DonationsFund");
+const TIMED_FUND = artifacts.require("TimedFund");
 
-contract("DonationsFund", accounts => {
+contract("TimedFund", accounts => {
     const ETH_MULTIPLIER = 10 ** 18;
 
     const [firstAccount, secondAccount, thirdAccount] = accounts;
@@ -18,7 +18,7 @@ contract("DonationsFund", accounts => {
 
     it('Creating a donations fund should set correct time', async () => {
         let currentBlockTime = await web3.eth.getBlock('latest').timestamp;
-        const fund = await DONATIONS_FUND.new(300);
+        const fund = await TIMED_FUND.new(300);
 
         let expiration = await fund.expires();
         let expectedExpiration = currentBlockTime + 300;
@@ -34,8 +34,8 @@ contract("DonationsFund", accounts => {
         }
     });
 
-    it('A donation to a "DonationsFund" should emit an event.', async () => {
-        const fund = await DONATIONS_FUND.new(300);
+    it('A donation to a "TimedFund" should emit an event.', async () => {
+        const fund = await TIMED_FUND.new(300);
         let donation = await fund.send(1000, {from: firstAccount});
 
         let eventName = donation.logs[0].event;
@@ -45,8 +45,8 @@ contract("DonationsFund", accounts => {
         assert.equal(1000, donation.logs[0].args.amount, 'Donation amount mismatch!');
     });
 
-    it('DonationsFund should be able to accept donations as long as it has not expired!', async () => {
-        const fund = await DONATIONS_FUND.new(300);
+    it('TimedFund`s should be able to accept donations as long as it has not expired!', async () => {
+        const fund = await TIMED_FUND.new(300);
         await fund.send(1000, {from: secondAccount});
 
         increaseTime(10000);
