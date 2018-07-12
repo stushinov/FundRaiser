@@ -27,7 +27,7 @@ contract("TimedFund", accounts => {
         assertUpToFiveSeconds(expectedExpiration, expiration);
 
         /**
-         * This methods is used to eliminate the differences that might occur from running the code.
+         * This methods is used to eliminate the time differences that might occur from running the code.
          */
         function assertUpToFiveSeconds(expectedExpiration, expiration) {
             let expired = expiration > expectedExpiration - 5 && expiration < expectedExpiration + 5;
@@ -147,7 +147,7 @@ contract("TimedFund", accounts => {
         try {
             await fund.withdrawal(FIVE_ETHERS, {from: firstAccount});
         }
-        catch(err){
+        catch (err) {
             //error was omitted.
             // No one but the owner of the contract should be able to successfully execute the "withdrawal" function.
         }
@@ -221,4 +221,68 @@ contract("TimedFund", accounts => {
 
         assert.equal(await fund.getBalance(), ONE_ETHER, "Balance after withdrawal is not correct!");
     });
+
+    it('The "refund" function should refund the ether of the callee only if a fund has expired and not reached its goal', async () => {
+
+        const TEN_ETHER = 10 * ETH_MULTIPLIER;
+        const FIVE_ETHER = 5 * ETH_MULTIPLIER;
+
+        const fund = await TIMED_FUND.new(300, TEN_ETHER, {from: secondAccount});
+
+        await web3.eth.sendTransaction({
+            from: thirdAccount,
+            to: fund.address,
+            value: FIVE_ETHER
+        });
+
+        await web3.eth.sendTransaction({
+            from: firstAccount,
+            to: fund.address,
+            value: ONE_ETHER
+        });
+
+        const DONATED_ETHER = FIVE_ETHER + ONE_ETHER;
+
+        //Should return false if the refund failed.
+        let result = await tryRefund(firstAccount);
+
+        assert.equal(result, false, "A refund occurred! 0");
+        assert.equal(await fund.getBalance(), DONATED_ETHER, "A refund occurred! 1");
+
+        increaseTime(400);
+
+        result = await tryRefund(firstAccount, fund);
+
+        assert.equal(result, true, "A refund occurred! 2");
+        assert.equal(await fund.getBalance(), DONATED_ETHER - ONE_ETHER, "A refund occurred! 3");
+    });
+
+    it('If the goal is reached the "refund" function should not be able to refund ether', async () => {
+        const TEN_ETHER = 10 * ETH_MULTIPLIER;
+        const fund = await TIMED_FUND.new(300, TEN_ETHER, {from: firstAccount});
+
+        await web3.eth.sendTransaction({
+            from: thirdAccount,
+            to: fund.address,
+            value: TEN_ETHER * 2 // 20 ETH
+        });
+
+        increaseTime(400);
+
+        let refundResult = await tryRefund(thirdAccount, fund);
+
+        assert.equal(refundResult, false, "A refund occurred!");
+        assert.equal(await fund.getBalance(), TEN_ETHER * 2, "A refund occurred!");
+    });
+
+    async function tryRefund(withAccount, instance) {
+        let refunded = true;
+        try {
+            await instance.refund({from: withAccount});
+        }
+        catch(err){
+            return false;
+        }
+        return true;
+    }
 });

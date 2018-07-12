@@ -1,7 +1,6 @@
 pragma solidity ^0.4.24;
 contract FundingFactory {
-
-
+    
 }
 
 interface Identifiable {
@@ -50,6 +49,11 @@ contract TimedFund is Fund, Identifiable {
         _;
     }
 
+    modifier ifFailed {
+        require(raised < target && now > expires);
+        _;
+    }
+
     uint256 public expires;
     uint256 public target;
     uint256 public raised;
@@ -60,6 +64,11 @@ contract TimedFund is Fund, Identifiable {
         expires = now.add(_expires);
         target = _target;
         raised = 0;
+    }
+
+    function refund() public payable ifFailed {
+        msg.sender.transfer(donations[msg.sender]);
+        donations[msg.sender] = donations[msg.sender].sub(donations[msg.sender]);
     }
 
     function withdrawal(uint256 _amount) public payable onlyOwner goalReached {
