@@ -11,7 +11,6 @@ interface Identifiable {
 contract Fund {
 
     address public owner;
-    string public kuromi = "kuromi";
 
     event Donation(address sender, uint256 amount);
 
