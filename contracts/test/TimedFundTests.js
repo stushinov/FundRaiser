@@ -1,7 +1,10 @@
 const TIMED_FUND = artifacts.require("TimedFund");
 
 contract("TimedFund", accounts => {
+
     const ETH_MULTIPLIER = 10 ** 18;
+
+    const ONE_ETHER = 1 * ETH_MULTIPLIER;
 
     const [firstAccount, secondAccount, thirdAccount] = accounts;
 
@@ -18,7 +21,7 @@ contract("TimedFund", accounts => {
 
     it('Creating a donations fund should set correct time', async () => {
         let currentBlockTime = await web3.eth.getBlock('latest').timestamp;
-        const fund = await TIMED_FUND.new(300);
+        const fund = await TIMED_FUND.new(300, ONE_ETHER);
 
         let expiration = await fund.expires();
         let expectedExpiration = currentBlockTime + 300;
@@ -35,7 +38,7 @@ contract("TimedFund", accounts => {
     });
 
     it('A donation to a "TimedFund" should emit an event.', async () => {
-        const fund = await TIMED_FUND.new(300);
+        const fund = await TIMED_FUND.new(300, ONE_ETHER);
         let donation = await fund.send(1000, {from: firstAccount});
 
         let eventName = donation.logs[0].event;
@@ -46,7 +49,7 @@ contract("TimedFund", accounts => {
     });
 
     it('TimedFund`s should be able to accept donations as long as it has not expired!', async () => {
-        const fund = await TIMED_FUND.new(300);
+        const fund = await TIMED_FUND.new(300, ONE_ETHER);
         await fund.send(1000, {from: secondAccount});
 
         increaseTime(10000);
@@ -64,5 +67,15 @@ contract("TimedFund", accounts => {
         assert.notEqual(error, undefined, 'Exception thrown');
         assert.equal(error.message, EXPECTED_ERROR_MESSAGE, 'Error mismatch!');
         assert.equal(await fund.getBalance(), 1000, 'Donations after time expiration occurred!');
-    })
+    });
+
+
+    it('Timed fund should set the correct target.', async () => {
+        const fund = await TIMED_FUND.new(300, 1.25 * ETH_MULTIPLIER, {from: secondAccount});
+
+        const EXPECTED_TARGET = 1.25 * ETH_MULTIPLIER; //1.25 ethers
+        const TARGET_FOUND = await fund.target();
+        
+        assert.equal(TARGET_FOUND, EXPECTED_TARGET, "Target mismatch!");
+    });
 });

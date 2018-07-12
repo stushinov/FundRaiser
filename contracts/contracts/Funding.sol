@@ -11,6 +11,7 @@ interface Identifiable {
 contract Fund {
 
     address public owner;
+    string public kuromi = "kuromi";
 
     event Donation(address sender, uint256 amount);
 
@@ -39,9 +40,11 @@ contract TimedFund is Fund, Identifiable {
     }
 
     uint256 public expires;
+    uint256 public target;
 
-    constructor(uint256 _expires) {
+    constructor(uint256 _expires, uint256 _target) public {
         expires = now + _expires;
+        target = _target;
     }
 
     function getType() public view returns (string) {
