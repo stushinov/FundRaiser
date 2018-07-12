@@ -47,7 +47,6 @@ contract("Funding", accounts => {
 
         let eventName = donation.logs[0].event;
 
-
         assert.equal(eventName, 'Donation', 'Event name mismatch');
         assert.equal(firstAccount, donation.logs[0].args.sender, 'Event name mismatch');
         assert.equal(1000, donation.logs[0].args.amount, 'Event name mismatch');

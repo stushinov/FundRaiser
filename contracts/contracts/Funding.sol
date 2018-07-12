@@ -32,7 +32,14 @@ contract Fund {
 }
 
 contract DonationsFund is Fund, Identifiable {
-    function getType() public view returns (string){
+
+    uint256 public expires;
+
+    constructor(uint256 _expires) {
+        expires = now + _expires;
+    }
+
+    function getType() public view returns (string) {
         return "DonationsFund";
     }
 }
