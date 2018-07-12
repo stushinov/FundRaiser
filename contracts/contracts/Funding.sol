@@ -33,6 +33,11 @@ contract Fund {
 
 contract DonationsFund is Fund, Identifiable {
 
+    modifier nonExpired {
+        require(now <= expires);
+        _;
+    }
+
     uint256 public expires;
 
     constructor(uint256 _expires) {
@@ -41,5 +46,9 @@ contract DonationsFund is Fund, Identifiable {
 
     function getType() public view returns (string) {
         return "DonationsFund";
+    }
+
+    function() public payable nonExpired {
+        emit Donation(msg.sender, msg.value);
     }
 }
