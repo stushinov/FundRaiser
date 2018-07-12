@@ -40,6 +40,11 @@ contract TimedFund is Fund, Identifiable {
         _;
     }
 
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
+
     uint256 public expires;
     uint256 public target;
     mapping(address => uint256) private donations;
@@ -49,7 +54,7 @@ contract TimedFund is Fund, Identifiable {
         target = _target;
     }
 
-    function withdrawal(uint256 _amount) public payable {
+    function withdrawal(uint256 _amount) public payable onlyOwner {
         owner.transfer(_amount);
     }
 

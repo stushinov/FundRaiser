@@ -115,7 +115,7 @@ contract("TimedFund", accounts => {
         const fund = await TIMED_FUND.new(300, ONE_ETHER, {from: secondAccount});
 
         const TEN_ETHERS = 10 * ETH_MULTIPLIER;
-        const FIVE_ETHERS = 5 *ETH_MULTIPLIER;
+        const FIVE_ETHERS = 5 * ETH_MULTIPLIER;
 
         await web3.eth.sendTransaction({
             from: secondAccount,
@@ -130,5 +130,32 @@ contract("TimedFund", accounts => {
         await fund.withdrawal(FIVE_ETHERS, {from: secondAccount});
 
         assert.equal(await fund.getBalance(), FIVE_ETHERS, "Balance mismatch!");
+    });
+
+    it('Only the owner should be able to call the withdrawal function', async () => {
+        const fund = await TIMED_FUND.new(300, ONE_ETHER, {from: secondAccount});
+
+        const TEN_ETHERS = 10 * ETH_MULTIPLIER;
+        const FIVE_ETHERS = 5 * ETH_MULTIPLIER;
+
+        await web3.eth.sendTransaction({
+            from: thirdAccount,
+            to: fund.address,
+            value: TEN_ETHERS
+        });
+
+        try {
+            await fund.withdrawal(FIVE_ETHERS, {from: firstAccount});
+        }
+        catch(err){
+            //error was omitted.
+            // No one but the owner of the contract should be able to successfully execute the "withdrawal" function.
+        }
+
+        assert.equal(await fund.getBalance(), TEN_ETHERS, "It was not the owner who called 'withdrawal'!");
+
+        await fund.withdrawal(FIVE_ETHERS, {from: secondAccount});
+
+        assert.equal(await fund.getBalance(), FIVE_ETHERS, "Balance mismatch!")
     });
 });
