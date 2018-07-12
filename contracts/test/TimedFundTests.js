@@ -184,4 +184,41 @@ contract("TimedFund", accounts => {
 
         assert.equal(EXPECTED_RAISED_WEI, RAISED_WEI_FOUND, "Raised amount mismatch!");
     });
+
+    it('Owner should only be able to withdrawal if the goal of the funding is reached!', async () => {
+
+        const TEN_ETHER = ONE_ETHER * 10;
+        const NINE_ETHER = ONE_ETHER * 9;
+
+        const fund = await TIMED_FUND.new(300, TEN_ETHER, {from: secondAccount});
+
+        await web3.eth.sendTransaction({
+            from: firstAccount,
+            to: fund.address,
+            value: NINE_ETHER
+        });
+
+        let error;
+        try {
+            await fund.withdrawal(ONE_ETHER, {from: secondAccount});
+        }
+        catch (err) {
+            // Owner should be able to withdrawal if the goal was reached.
+            error = err;
+        }
+
+        assert.notEqual(error, undefined, 'Owner withdrew funds before the goal was reached');
+
+        await web3.eth.sendTransaction({
+            from: thirdAccount,
+            to: fund.address,
+            value: ONE_ETHER
+        });
+
+        assert.equal(await fund.getBalance(), TEN_ETHER, "Donations mismatch!");
+
+        await fund.withdrawal(NINE_ETHER, {from: secondAccount});
+
+        assert.equal(await fund.getBalance(), ONE_ETHER, "Balance after withdrawal is not correct!");
+    });
 });

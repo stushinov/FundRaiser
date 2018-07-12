@@ -45,6 +45,11 @@ contract TimedFund is Fund, Identifiable {
         _;
     }
 
+    modifier goalReached {
+        require(raised >= target);
+        _;
+    }
+
     uint256 public expires;
     uint256 public target;
     uint256 public raised;
@@ -57,7 +62,7 @@ contract TimedFund is Fund, Identifiable {
         raised = 0;
     }
 
-    function withdrawal(uint256 _amount) public payable onlyOwner {
+    function withdrawal(uint256 _amount) public payable onlyOwner goalReached {
         owner.transfer(_amount);
     }
 
