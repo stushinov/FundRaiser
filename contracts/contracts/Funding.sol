@@ -3,8 +3,8 @@ contract FundingFactory {
 
     event ContractCreated(address contractAddress, address _by);
 
-    function createTimedFund(uint256 expirationTime, uint256 goal) public returns(address){
-        Identifiable i = new TimedFund(msg.sender, expirationTime, goal);
+    function createTimedFund(string _data, uint256 expirationTime, uint256 goal) public returns(address){
+        Identifiable i = new TimedFund(msg.sender, _data, expirationTime, goal);
         emit ContractCreated(i, msg.sender);
         return i;
     }
@@ -18,12 +18,24 @@ contract Fund {
 
     using SafeMath for uint256;
 
+
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
+
     address public owner;
+    string public data;
 
     event Donation(address sender, uint256 amount);
 
-    constructor(address _owner) public {
+    constructor(address _owner, string _data) public {
         owner = _owner;
+        data = _data;
+    }
+
+    function setData(string _data) public onlyOwner{
+        data = _data;
     }
 
     function getBalance() constant public returns (uint256){
@@ -46,11 +58,6 @@ contract TimedFund is Fund, Identifiable {
         _;
     }
 
-    modifier onlyOwner {
-        require(msg.sender == owner);
-        _;
-    }
-
     modifier goalReached {
         require(raised >= target);
         _;
@@ -67,7 +74,7 @@ contract TimedFund is Fund, Identifiable {
 
     mapping(address => uint256) private donations;
 
-    constructor(address _owner, uint256 _expires, uint256 _target) Fund(_owner) public {
+    constructor(address _owner, string _data, uint256 _expires, uint256 _target) Fund(_owner, _data) public {
         expires = now.add(_expires);
         target = _target;
         raised = 0;

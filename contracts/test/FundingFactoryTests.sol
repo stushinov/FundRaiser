@@ -10,7 +10,7 @@ contract FundingFactoryTests {
     }
 
     function testCreatinonOfTimedFund() public {
-        address fundAddr = ff.createTimedFund(300, 10**18);
+        address fundAddr = ff.createTimedFund("irrelevant", 300, 10**18);
         TimedFund tf = TimedFund(fundAddr);
         string memory expected =  "TimedFund";
         Assert.equal(tf.getType(), expected, "Type mismatch!");
@@ -18,7 +18,7 @@ contract FundingFactoryTests {
     }
 
     function testCreationOfTimedFundShouldAssingCorrectOwner(){
-        address fundAddr = ff.createTimedFund(300, 10**18);
+        address fundAddr = ff.createTimedFund("irrelevant", 300, 10**18);
         TimedFund tf = TimedFund(fundAddr);
         Assert.equal(this, tf.owner(), "Owner mismatch!");
     }

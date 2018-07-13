@@ -19,7 +19,7 @@ contract("TimedFund", accounts => {
 
     it('Creating a donations fund should set correct time', async () => {
         let currentBlockTime = await web3.eth.getBlock('latest').timestamp;
-        const fund = await TIMED_FUND.new(firstAccount, 300, ONE_ETHER, {from: firstAccount});
+        const fund = await TIMED_FUND.new(firstAccount, "irrelevant",  300, ONE_ETHER, {from: firstAccount});
 
         let expiration = await fund.expires();
         let expectedExpiration = currentBlockTime + 300;
@@ -36,7 +36,7 @@ contract("TimedFund", accounts => {
     });
 
     it('A donation to a "TimedFund" should emit an event.', async () => {
-        const fund = await TIMED_FUND.new(firstAccount, 300, ONE_ETHER, {from: firstAccount});
+        const fund = await TIMED_FUND.new(firstAccount, "irrelevant",  300, ONE_ETHER, {from: firstAccount});
         let donation = await fund.send(1000, {from: firstAccount});
 
         let eventName = donation.logs[0].event;
@@ -47,7 +47,7 @@ contract("TimedFund", accounts => {
     });
 
     it('TimedFund`s should be able to accept donations as long as it has not expired!', async () => {
-        const fund = await TIMED_FUND.new(firstAccount, 300, ONE_ETHER, {from: firstAccount});
+        const fund = await TIMED_FUND.new(firstAccount, "irrelevant", 300, ONE_ETHER, {from: firstAccount});
         await fund.send(1000, {from: secondAccount});
 
         increaseTime(10000);
@@ -74,7 +74,7 @@ contract("TimedFund", accounts => {
 
 
     it('Timed fund should set the correct target.', async () => {
-        const fund = await TIMED_FUND.new(secondAccount, 300, 1.25 * ETH_MULTIPLIER, {from: secondAccount});
+        const fund = await TIMED_FUND.new(secondAccount,"irrelevant", 300, 1.25 * ETH_MULTIPLIER, {from: secondAccount});
 
         const EXPECTED_TARGET = 1.25 * ETH_MULTIPLIER; //1.25 ethers
         const TARGET_FOUND = await fund.target();
@@ -83,7 +83,7 @@ contract("TimedFund", accounts => {
     });
 
     it('Donations made to the "TimedFund" are recorded and have the correct amounts.', async () => {
-        const fund = await TIMED_FUND.new(secondAccount, 300, ONE_ETHER, {from: secondAccount});
+        const fund = await TIMED_FUND.new(secondAccount,"irrelevant", 300, ONE_ETHER, {from: secondAccount});
 
         const TEN_THOUSAND_WEI = 10000;
         const TEN_WEI = 10;
@@ -117,7 +117,7 @@ contract("TimedFund", accounts => {
     });
 
     it('Withdrawal function should send money to the owner', async () => {
-        const fund = await TIMED_FUND.new(secondAccount, 300, ONE_ETHER, {from: secondAccount});
+        const fund = await TIMED_FUND.new(secondAccount,"irrelevant", 300, ONE_ETHER, {from: secondAccount});
 
         const TEN_ETHERS = 10 * ETH_MULTIPLIER;
         const FIVE_ETHERS = 5 * ETH_MULTIPLIER;
@@ -138,7 +138,7 @@ contract("TimedFund", accounts => {
     });
 
     it('Only the owner should be able to call the withdrawal function', async () => {
-        const fund = await TIMED_FUND.new(secondAccount, 300, ONE_ETHER, {from: secondAccount});
+        const fund = await TIMED_FUND.new(secondAccount,"irrelevant", 300, ONE_ETHER, {from: secondAccount});
 
         const TEN_ETHERS = 10 * ETH_MULTIPLIER;
         const FIVE_ETHERS = 5 * ETH_MULTIPLIER;
@@ -165,7 +165,7 @@ contract("TimedFund", accounts => {
     });
 
     it('The "raised" variable should keep the total amount that was donated, no matter if the owner withdrawals funds', async () => {
-        const fund = await TIMED_FUND.new(secondAccount, 300, ONE_ETHER, {from: secondAccount});
+        const fund = await TIMED_FUND.new(secondAccount,"irrelevant", 300, ONE_ETHER, {from: secondAccount});
 
         const TEN_ETHERS = 10 * ONE_ETHER;
         const FIVE_ETHERS = 5 * ONE_ETHER;
@@ -195,7 +195,7 @@ contract("TimedFund", accounts => {
         const TEN_ETHER = ONE_ETHER * 10;
         const NINE_ETHER = ONE_ETHER * 9;
 
-        const fund = await TIMED_FUND.new(secondAccount, 300, TEN_ETHER, {from: secondAccount});
+        const fund = await TIMED_FUND.new(secondAccount,"irrelevant", 300, TEN_ETHER, {from: secondAccount});
 
         await web3.eth.sendTransaction({
             from: firstAccount,
@@ -232,7 +232,7 @@ contract("TimedFund", accounts => {
         const TEN_ETHER = 10 * ETH_MULTIPLIER;
         const FIVE_ETHER = 5 * ETH_MULTIPLIER;
 
-        const fund = await TIMED_FUND.new(secondAccount, 300, TEN_ETHER, {from: secondAccount});
+        const fund = await TIMED_FUND.new(secondAccount,"irrelevant", 300, TEN_ETHER, {from: secondAccount});
 
         await web3.eth.sendTransaction({
             from: thirdAccount,
@@ -264,7 +264,7 @@ contract("TimedFund", accounts => {
 
     it('If the goal is reached the "refund" function should not be able to refund ether', async () => {
         const TEN_ETHER = 10 * ETH_MULTIPLIER;
-        const fund = await TIMED_FUND.new(secondAccount, 300, TEN_ETHER, {from: firstAccount});
+        const fund = await TIMED_FUND.new(secondAccount,"irrelevant", 300, TEN_ETHER, {from: firstAccount});
 
         await web3.eth.sendTransaction({
             from: thirdAccount,
