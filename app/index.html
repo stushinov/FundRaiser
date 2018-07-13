@@ -2,9 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="lib/bootstrap.css">
+    <script src="lib/jquery.js"></script>
     <title>FundRaiser</title>
 </head>
 <body>
-    <h1>Empty body!</h1>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-5">
+    <div id="navigation" class="container-fluid">
+        <a id="goHome" class="navbar-brand" href="#">FundRaiser</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+                aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a id="fundCreateForm" class="nav-link" href="#">Create</a>
+                </li>
+                <li class="nav-item">
+                    <a id="listFunds" class="nav-link" href="#">List</a>
+                </li>
+                <li class="nav-item">
+                    <a id="about" class="nav-link" href="#">About</a>
+                </li>
+            </ul>
+            <div class="form-inline my-2 my-lg-0">
+                <button id="searchButton" class="btn btn-secondary my-2 my-sm-0">Find</button>
+                <input id="findAddress" class="form-control mr-sm-2" type="text" placeholder="Contract address">
+            </div>
+        </div>
+    </div>
+
+</nav>
+
+<main class="container-fluid">
+    <div class="row justify-content-center">
+        <div id="mainContent">
+
+        </div>
+    </div>
+</main>
+
+<script src="js/app.js"></script>
 </body>
 </html>
