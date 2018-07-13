@@ -1,12 +1,19 @@
 pragma solidity ^0.4.24;
 contract FundingFactory {
 
+    address[] private contractsCreated;
+
     event ContractCreated(address contractAddress, address _by);
 
     function createTimedFund(string _data, uint256 expirationTime, uint256 goal) public returns(address){
         Identifiable i = new TimedFund(msg.sender, _data, expirationTime, goal);
+        contractsCreated.push(i);
         emit ContractCreated(i, msg.sender);
         return i;
+    }
+
+    function getContractByIndex(uint _index) public view returns() {
+        return contractsCreated[_index];
     }
 }
 
