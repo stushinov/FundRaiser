@@ -12,8 +12,12 @@ contract FundingFactory {
         return i;
     }
 
-    function getContractByIndex(uint _index) public view returns() {
+    function getContractByIndex(uint _index) public view returns(address) {
         return contractsCreated[_index];
+    }
+
+    function getLength() public view returns(uint256){
+        return contractsCreated.length;
     }
 }
 
