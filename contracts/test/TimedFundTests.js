@@ -18,7 +18,9 @@ contract("TimedFund", accounts => {
     };
 
     it('Creating a donations fund should set correct time', async () => {
+
         let currentBlockTime = await web3.eth.getBlock('latest').timestamp;
+
         const fund = await TIMED_FUND.new(firstAccount, "irrelevant",  300, ONE_ETHER, {from: firstAccount});
 
         let expiration = await fund.expires();

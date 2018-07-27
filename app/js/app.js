@@ -1,4 +1,5 @@
 const fundFactoryAddress = '0xca4258048c938de566b6dd9449FA9B3a36f4EAA6';
+
 const contractFactoryAbi = [
     {
         "constant": true,
@@ -359,6 +360,10 @@ const views = {
     "</div>"
 };
 
+const IPFS = window.IpfsApi('localhost', 5001);
+const buffer = IPFS.Buffer;
+
+
 const mainDiv = $('#mainContent');
 
 $(function () {
@@ -372,8 +377,6 @@ $(function () {
 
     $('#about').click(function () {
         renderView(views.about);
-        alert('Heelo?');
-
     });
 
     $('#fundCreateForm').click(function () {
@@ -466,8 +469,8 @@ function getTarget(contract) {
 }
 
 function getOwner(contract) {
-    let result;
-    contract.owner((err, res) => {
+    let result = "";
+    contract.data((err, res) => {
         if(err){
             notify(notifications.error(err));
         }
@@ -504,21 +507,34 @@ function createFund() {
     };
 
     let fundString = JSON.stringify(fund);
-    let hash = CryptoJS.SHA256(fundString);
-
-
-    let contractData = hash.toString();
-    let contractTime = fund.expires;
-    let contractGoal = fund.goal;
 
     let contract = web3.eth.contract(contractFactoryAbi).at(fundFactoryAddress);
-    contract.createTimedFund(contractData, contractTime, contractGoal, (err, txHash) => {
-            if (err) {
-                notify(notifications.error(err));
-                return;
-            }
-            notify(notifications.creationSuccess(txHash));
-    });
+
+    let stringBuffer = buffer.from(fundString);
+
+    IPFS.files.add(stringBuffer, (err, result) => {
+
+        if(err){
+            notify(notifications.error('Something went wrong'));
+            return;
+        }
+
+        if(result) {
+            let ipfsHash = result[0].hash;
+
+            let contractTime = fund.expires;
+            let contractGoal = fund.goal;
+
+
+            contract.createTimedFund(ipfsHash, contractTime, contractGoal, (err, txHash) => {
+                    if (err) {
+                        notify(notifications.error(err));
+                        return;
+                    }
+                    notify(notifications.creationSuccess(txHash));
+            });
+        }
+    });   
 }
 
 function notify(event) {
